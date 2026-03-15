@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+console.log('LMSPro API initialized with URL:', API_URL);
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+  baseURL: API_URL,
 });
 
 api.interceptors.request.use(
