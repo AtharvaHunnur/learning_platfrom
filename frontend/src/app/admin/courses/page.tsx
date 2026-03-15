@@ -7,7 +7,6 @@ import { api } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -36,6 +35,9 @@ interface Course {
   is_bestseller: boolean;
   users: { name: string } | null;
   created_at: string;
+  headline?: string;
+  description?: string;
+  thumbnail_url?: string;
 }
 
 export default function AdminCoursesPage() {
@@ -104,9 +106,9 @@ export default function AdminCoursesPage() {
     setFormData({
       title: course.title,
       slug: course.slug,
-      headline: (course as any).headline || "",
-      description: (course as any).description || "",
-      thumbnail_url: (course as any).thumbnail_url || "",
+      headline: course.headline || "",
+      description: course.description || "",
+      thumbnail_url: course.thumbnail_url || "",
       price: course.price.toString(),
     });
     setIsDialogOpen(true);

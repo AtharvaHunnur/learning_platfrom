@@ -47,8 +47,10 @@ export default function LoginPage() {
       login(user, token, refreshToken);
       
       router.push(authRole === 'admin' ? '/admin' : '/dashboard');
-    } catch (err: any) {
-      setErrorMsg(err.response?.data?.error || "Authentication failed. Please try again.");
+    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const error = err as any;
+      setErrorMsg(error.response?.data?.error || "Authentication failed. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Settings, Save, Mail, Globe, ShieldAlert, UserPlus, Loader2 } from "lucide-react";
+import { Save, Mail, Globe, ShieldAlert, UserPlus, Loader2 } from "lucide-react";
 import { api } from "@/lib/axios";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,6 @@ export default function AdminSettingsPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState("");
 
   const fetchSettings = async () => {
     try {
@@ -27,7 +26,6 @@ export default function AdminSettingsPage() {
       setSettings(res.data);
     } catch (err) {
       console.error("Failed to fetch settings:", err);
-      setError("Failed to load platform settings.");
     } finally {
       setIsLoading(false);
     }

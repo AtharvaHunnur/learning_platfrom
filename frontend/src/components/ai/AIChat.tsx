@@ -29,6 +29,10 @@ export const AIChat = ({
   systemIcon = <Bot className="w-5 h-5 text-primary" />
 }: AIChatProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  //   const { user } = useAuthStore();
+  //   const [messages, setMessages] = useState<Message[]>([]);
+  //   const [input, setInput] = useState("");
+  //   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -60,7 +64,7 @@ export const AIChat = ({
     try {
       const response = await onSendMessage(text);
       setMessages(prev => [...prev, { role: 'assistant', content: response }]);
-    } catch (error) {
+    } catch {
       setMessages(prev => [...prev, { role: 'assistant', content: "I'm having a bit of trouble connecting to my brain right now. Please try again in a moment!" }]);
     } finally {
       setIsLoading(false);
@@ -117,7 +121,7 @@ export const AIChat = ({
                       </div>
                       <h3 className="text-lg font-semibold text-foreground mb-2">How can I assist you?</h3>
                       <p className="text-xs text-muted-foreground px-12 leading-relaxed">
-                        I'm here to answer your questions, give suggestions, and help automate your tasks.
+                        I&apos;m here to answer your questions, give suggestions, and help automate your tasks.
                       </p>
                       
                       <div className="mt-8 grid grid-cols-1 gap-2.5 px-6">

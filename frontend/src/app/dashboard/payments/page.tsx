@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CreditCard, Calendar, CheckCircle, Search } from "lucide-react";
+import { CreditCard, CheckCircle } from "lucide-react";
 import { api } from "@/lib/axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,

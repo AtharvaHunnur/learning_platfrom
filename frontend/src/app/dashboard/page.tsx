@@ -7,7 +7,7 @@ import { BookOpen, Star, Clock, AlertCircle, Sparkles } from "lucide-react";
 
 import { useAuthStore } from "@/store/authStore";
 import { api } from "@/lib/axios";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,7 +36,7 @@ export default function DashboardHome() {
       try {
         const res = await api.get('/courses');
         setCourses(res.data);
-      } catch (err) {
+      } catch {
         setError("Failed to load courses. Please try again later.");
       } finally {
         setIsLoading(false);

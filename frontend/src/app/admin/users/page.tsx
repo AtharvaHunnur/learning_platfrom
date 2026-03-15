@@ -64,8 +64,8 @@ export default function AdminUsersPage() {
       const res = await api.get('/users');
       setUsers(res.data);
       setFilteredUsers(res.data);
-    } catch (err) {
-      console.error("Failed to fetch users:", err);
+    } catch {
+      console.error("Failed to fetch users");
     } finally {
       setIsLoading(false);
     }
@@ -93,8 +93,8 @@ export default function AdminUsersPage() {
     try {
       await api.post(`/users/${userId}/warn`, { reason });
       alert(`Warning successfully issued to ${email}`);
-    } catch (err) {
-      console.error("Warning failed:", err);
+    } catch {
+      console.error("Warning failed");
       alert("Failed to issue warning.");
     }
   };
@@ -104,8 +104,8 @@ export default function AdminUsersPage() {
       try {
         await api.delete(`/users/${user.id}`);
         fetchUsers();
-      } catch (err) {
-        console.error("Delete failed:", err);
+      } catch {
+        console.error("Delete failed");
         alert("Failed to delete user.");
       }
     }
@@ -124,8 +124,8 @@ export default function AdminUsersPage() {
       await api.put(`/users/${editUser.id}`, editFormData);
       setIsEditDialogOpen(false);
       fetchUsers();
-    } catch (err) {
-      console.error("Update failed:", err);
+    } catch {
+      console.error("Update failed");
       alert("Failed to update user.");
     }
   };
@@ -137,8 +137,8 @@ export default function AdminUsersPage() {
       setIsCreateDialogOpen(false);
       setCreateFormData({ name: "", email: "", password: "", role: "student" });
       fetchUsers();
-    } catch (err) {
-      console.error("Create failed:", err);
+    } catch {
+      console.error("Create failed");
       alert("Failed to create user. Email might already be in use.");
     }
   };

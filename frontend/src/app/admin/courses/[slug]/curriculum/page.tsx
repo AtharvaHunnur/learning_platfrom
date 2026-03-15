@@ -8,7 +8,7 @@ import { api } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -211,7 +211,7 @@ export default function CurriculumBuilderPage() {
                         <div className="space-y-2">
                           <Label>YouTube ID (11 chars)</Label>
                           <Input value={videoData.youtubeId} onChange={(e) => setVideoData(prev => ({...prev, youtubeId: e.target.value}))} placeholder="e.g. dQw4w9WgXcQ" required maxLength={11} minLength={11} className="bg-background/50 font-mono" />
-                          <p className="text-xs text-muted-foreground">The 11-character string after "v=" in the YouTube URL.</p>
+                          <p className="text-xs text-muted-foreground">The 11-character string after &quot;v=&quot; in the YouTube URL.</p>
                         </div>
                         <Button type="submit" className="w-full">Add Video to {section.title}</Button>
                       </form>
@@ -223,7 +223,7 @@ export default function CurriculumBuilderPage() {
               <CardContent className="p-0">
                 {section.videos.length === 0 ? (
                   <div className="p-8 text-center text-sm text-muted-foreground italic bg-background/20">
-                    No modules inside this section. Click "Video Item" to add one.
+                    No modules inside this section. Click &quot;Video Item&quot; to add one.
                   </div>
                 ) : (
                   <div className="divide-y divide-white/5">

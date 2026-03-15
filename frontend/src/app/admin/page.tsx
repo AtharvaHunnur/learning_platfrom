@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { 
   Users, 
   BookOpen, 
-  PlaySquare, 
   TrendingUp,
   Activity,
   AlertCircle,
@@ -20,7 +19,6 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
-import { useAuthStore } from "@/store/authStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -47,7 +45,6 @@ interface TrendItem {
 }
 
 export default function AdminDashboardPage() {
-  const { user } = useAuthStore();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [trends, setTrends] = useState<TrendItem[]>([]);
@@ -65,7 +62,7 @@ export default function AdminDashboardPage() {
         setStats(statsRes.data);
         setActivities(activityRes.data);
         setTrends(trendsRes.data);
-      } catch (err) {
+      } catch {
         setError("Failed to load dashboard statistics.");
       } finally {
         setIsLoading(false);
@@ -119,7 +116,7 @@ export default function AdminDashboardPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-1">Admin Dashboard</h1>
-          <p className="text-muted-foreground text-sm">Welcome back, Administrator. Here's what's happening today.</p>
+          <p className="text-muted-foreground text-sm">Welcome back, Administrator. Here&apos;s what&apos;s happening today.</p>
         </div>
         <div className="flex items-center gap-2 bg-accent/10 text-accent px-3 py-1.5 rounded-full border border-accent/15 text-xs font-medium shrink-0">
           <Activity className="w-3.5 h-3.5 animate-pulse" />

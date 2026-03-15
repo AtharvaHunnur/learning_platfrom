@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import YouTube from "react-youtube";
-import { CheckCircle2, Circle, ArrowLeft, PlayCircle, Lock, Shield, ListVideo, X } from "lucide-react";
+import { CheckCircle2, ArrowLeft, PlayCircle, Shield, ListVideo, X } from "lucide-react";
 
 import { api } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
@@ -47,6 +47,7 @@ export default function CoursePlayerPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Player state
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const playerRef = useRef<any>(null);
   const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -62,12 +63,12 @@ export default function CoursePlayerPage() {
             setProgressData(progRes.data.progress || []);
             const flatVideos = (courseRes.data.sections || []).flatMap((s: Section) => s.videos);
             const firstUnwatched = flatVideos.find((v: Video) => {
-              const p = progRes.data.progress?.find((p: any) => p.video_id === v.id);
+              const p = progRes.data.progress?.find((p: { video_id: string, is_completed: boolean }) => p.video_id === v.id);
               return !p?.is_completed;
             });
             setActiveVideo(firstUnwatched || flatVideos[0] || null);
           }
-        } catch (err) {
+        } catch {
           router.push(`/course/${slug}`);
         }
       } catch (err) {
@@ -81,6 +82,7 @@ export default function CoursePlayerPage() {
     return () => stopSyncLoop();
   }, [slug, router]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const startSyncLoop = (player: any) => {
     if (syncIntervalRef.current) clearInterval(syncIntervalRef.current);
     
@@ -108,9 +110,11 @@ export default function CoursePlayerPage() {
             }];
           }
         });
-      } catch (err: any) {
-        if (err.response?.status === 422) {
-          const allowedTime = err.response.data.allowedPosition || 0;
+      } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const error = err as any;
+        if (error.response?.status === 422) {
+          const allowedTime = error.response.data.allowedPosition || 0;
           player.seekTo(allowedTime, true);
         }
       }
@@ -124,6 +128,7 @@ export default function CoursePlayerPage() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onPlayerReady = (e: any) => {
     playerRef.current = e.target;
     const myProg = progressData.find(p => p.video_id === activeVideo?.id);
@@ -132,6 +137,7 @@ export default function CoursePlayerPage() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onPlayerStateChange = (e: any) => {
     if (e.data === 1) {
       startSyncLoop(e.target);

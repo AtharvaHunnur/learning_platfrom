@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { PlayCircle, Clock, Star, CheckCircle, Shield, Award } from "lucide-react";
+import { PlayCircle, Clock, Star, Shield, Award } from "lucide-react";
 
 import { api } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,7 @@ export default function CourseLandingPage() {
           if (progressRes.data) {
             setIsEnrolled(true);
           }
-        } catch (err) {
+        } catch {
           // Not enrolled
         }
       } catch (err) {

@@ -12,9 +12,7 @@ import {
   Activity,
   CreditCard,
   X,
-  Menu,
-  Sun,
-  Moon
+  Menu
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
