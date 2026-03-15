@@ -57,46 +57,27 @@ router.post('/login', async (req, res) => {
 // Register Endpoint
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role = 'student' } = req.body;
+    const { name, email, password, role } = req.body
 
-    const existingUser = await prisma.users.findUnique({ where: { email } });
-    if (existingUser) {
-      return res.status(400).json({ error: 'Email already in use' });
-    }
+    console.log("Register request:", req.body)
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     const user = await prisma.users.create({
       data: {
         name,
         email,
         password_hash: hashedPassword,
-        role: role as any
+        role
       }
-    });
+    })
 
-    const accessToken = jwt.sign(
-      { userId: user.id.toString(), email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: '15m' }
-    );
+    res.json(user)
 
-    const refreshToken = crypto.randomBytes(40).toString('hex');
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
-
-    await prisma.refresh_tokens.create({
-      data: {
-        user_id: user.id,
-        token_hash: crypto.createHash('sha256').update(refreshToken).digest('hex'),
-        expires_at: expiresAt
-      }
-    });
-
-    res.json({ token: accessToken, refreshToken, user: { id: user.id.toString(), name: user.name, email: user.email, role: user.role } });
   } catch (error) {
-    console.error('Register error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("REGISTER ERROR:", error)
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+    res.status(500).json({ error: errorMessage })
   }
 });
 
