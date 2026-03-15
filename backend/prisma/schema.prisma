@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model enrollments {
+  id          BigInt    @id @default(autoincrement())
+  user_id     BigInt?
+  subject_id  BigInt?
+  enrolled_at DateTime? @default(now()) @db.Timestamp(0)
+  users       users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "enrollments_ibfk_1")
+  subjects    subjects? @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "enrollments_ibfk_2")
+
+  @@unique([user_id, subject_id], map: "user_id")
+  @@index([subject_id], map: "subject_id")
+}
+
+model refresh_tokens {
+  id         BigInt    @id @default(autoincrement())
+  user_id    BigInt
+  token_hash String    @db.Text
+  expires_at DateTime  @db.Timestamp(0)
+  revoked_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "refresh_tokens_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model sections {
+  id          BigInt    @id @default(autoincrement())
+  subject_id  BigInt?
+  title       String    @db.VarChar(255)
+  order_index Int
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+  subjects    subjects? @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "sections_ibfk_1")
+  videos      videos[]
+
+  @@index([subject_id], map: "subject_id")
+}
+
+model subjects {
+  id               BigInt        @id @default(autoincrement())
+  title            String        @db.VarChar(255)
+  slug             String        @db.VarChar(255)
+  headline         String?       @db.VarChar(255)
+  description      String?       @db.Text
+  thumbnail_url    String?       @db.VarChar(255)
+  created_by       BigInt?
+  is_published     Boolean?      @default(false)
+  is_bestseller    Boolean?      @default(false)
+  rating           Decimal?      @default(0.0) @db.Decimal(3, 1)
+  review_count     Int?          @default(0)
+  enrollment_count Int?          @default(0)
+  price            Decimal?      @default(0.00) @db.Decimal(10, 2)
+  created_at       DateTime?     @default(now()) @db.Timestamp(0)
+  enrollments      enrollments[]
+  sections         sections[]
+  payments         payments[]
+  users            users?        @relation(fields: [created_by], references: [id], onUpdate: NoAction, map: "subjects_ibfk_1")
+
+  @@index([created_by], map: "created_by")
+}
+
+model payments {
+  id             BigInt    @id @default(autoincrement())
+  user_id        BigInt
+  subject_id     BigInt
+  amount         Decimal   @db.Decimal(10, 2)
+  transaction_id String    @unique @db.VarChar(255)
+  status         String    @default("completed") @db.VarChar(50)
+  created_at     DateTime? @default(now()) @db.Timestamp(0)
+  users          users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  subjects       subjects  @relation(fields: [subject_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id])
+  @@index([subject_id])
+}
+
+model users {
+  id             BigInt           @id @default(autoincrement())
+  name           String           @db.VarChar(255)
+  email          String           @unique(map: "email") @db.VarChar(255)
+  password_hash  String           @db.VarChar(255)
+  role           users_role?      @default(student)
+  created_at     DateTime?        @default(now()) @db.Timestamp(0)
+  enrollments    enrollments[]
+  refresh_tokens refresh_tokens[]
+  subjects       subjects[]
+  video_progress video_progress[]
+  payments       payments[]
+}
+
+model video_progress {
+  id                    BigInt    @id @default(autoincrement())
+  user_id               BigInt?
+  video_id              BigInt?
+  last_position_seconds Int?      @default(0)
+  is_completed          Boolean?  @default(false)
+  completed_at          DateTime? @db.Timestamp(0)
+  updated_at            DateTime? @default(now()) @db.Timestamp(0)
+  users                 users?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "video_progress_ibfk_1")
+  videos                videos?   @relation(fields: [video_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "video_progress_ibfk_2")
+
+  @@unique([user_id, video_id], map: "user_id")
+  @@index([video_id], map: "video_id")
+}
+
+model videos {
+  id               BigInt           @id @default(autoincrement())
+  section_id       BigInt?
+  title            String           @db.VarChar(255)
+  youtube_video_id String           @db.VarChar(255)
+  description      String?          @db.Text
+  duration_seconds Int?             @default(0)
+  order_index      Int
+  created_at       DateTime?        @default(now()) @db.Timestamp(0)
+  video_progress   video_progress[]
+  sections         sections?        @relation(fields: [section_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "videos_ibfk_1")
+
+  @@index([section_id], map: "section_id")
+}
+
+enum users_role {
+  admin
+  student
+  instructor
+}
+
+model settings {
+  id                        Int      @id @default(1)
+  site_name                 String   @default("LMSPro") @db.VarChar(255)
+  support_email             String   @default("support@lmspro.com") @db.VarChar(255)
+  maintenance_mode          Boolean  @default(false)
+  allow_new_registrations   Boolean  @default(true)
+  updated_at                DateTime @default(now()) @db.Timestamp(0)
+}
