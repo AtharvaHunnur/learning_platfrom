@@ -58,6 +58,13 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, role } = req.body
+    const roleMap: any = {
+      learner: "student",
+      admin: "admin",
+      instructor: "instructor"
+    };
+
+    const normalizedRole = roleMap[role?.toLowerCase()] || "student";
 
     console.log("Register request:", req.body)
 
@@ -68,9 +75,9 @@ router.post('/register', async (req, res) => {
         name,
         email,
         password_hash: hashedPassword,
-        role
+        role: role as any
       }
-    })
+    });
 
     res.json(user)
 
