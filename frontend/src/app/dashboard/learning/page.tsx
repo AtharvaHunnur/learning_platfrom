@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface EnrolledCourse {
@@ -69,10 +70,11 @@ export default function MyLearningPage() {
           {courses.map((course) => (
             <Card key={course.id} className="glass-card overflow-hidden group border-white/[0.06] hover:border-primary/20 transition-all duration-300">
               <div className="relative aspect-video overflow-hidden">
-                <img
+                <Image
                   src={course.thumbnail_url || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80"}
                   alt={course.title}
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent flex items-end p-4">
                    <div className="w-full">

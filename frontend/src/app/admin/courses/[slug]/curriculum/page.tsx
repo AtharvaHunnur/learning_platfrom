@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Plus, Edit2, Trash2, GripVertical, Youtube, AlignLeft, ArrowLeft } from "lucide-react";
 
@@ -54,7 +54,7 @@ export default function CurriculumBuilderPage() {
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const [videoData, setVideoData] = useState({ title: "", youtubeId: "" });
 
-  const fetchCourseData = async () => {
+  const fetchCourseData = useCallback(async () => {
     try {
       setIsLoading(true);
       const res = await api.get(`/courses/${slug}`); // fetches course + sections + videos
@@ -65,11 +65,11 @@ export default function CurriculumBuilderPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [slug]);
 
   useEffect(() => {
     if (slug) fetchCourseData();
-  }, [slug]);
+  }, [slug, fetchCourseData]);
 
   const handleCreateSection = async (e: React.FormEvent) => {
     e.preventDefault();
