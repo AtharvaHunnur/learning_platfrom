@@ -57,7 +57,8 @@ router.post('/login', async (req, res) => {
 // Register Endpoint
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body
+    const { name, email, password, role } = req.body;
+
     const roleMap: any = {
       learner: "student",
       admin: "admin",
@@ -66,25 +67,28 @@ router.post('/register', async (req, res) => {
 
     const normalizedRole = roleMap[role?.toLowerCase()] || "student";
 
-    console.log("Register request:", req.body)
+    const existingUser = await prisma.users.findUnique({ where: { email } });
 
-    const hashedPassword = await bcrypt.hash(password, 10)
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email already in use' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.users.create({
       data: {
         name,
         email,
         password_hash: hashedPassword,
-        role: role as any
+        role: normalizedRole as any
       }
     });
 
-    res.json(user)
+    res.json(user);
 
   } catch (error) {
-    console.error("REGISTER ERROR:", error)
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
-    res.status(500).json({ error: errorMessage })
+    console.error('Register error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
