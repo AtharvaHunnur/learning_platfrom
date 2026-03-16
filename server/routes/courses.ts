@@ -93,7 +93,7 @@ router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
     const { title, slug, headline, description, thumbnail_url, price, is_published, is_bestseller } = req.body;
     
     const updatedCourse = await prisma.subjects.update({
-      where: { id: BigInt(req.params.id) },
+      where: { id: BigInt(req.params.id as string) },
       data: { title, slug, headline, description, thumbnail_url, price, is_published, is_bestseller }
     });
 
@@ -108,7 +108,7 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.subjects.delete({
-      where: { id: BigInt(id) }
+      where: { id: BigInt(id as string) }
     });
     res.json({ message: 'Course deleted successfully' });
   } catch (error) {

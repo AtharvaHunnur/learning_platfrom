@@ -48,7 +48,7 @@ router.put('/videos/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { title, youtube_video_id, description, order_index, duration_seconds } = req.body;
     const updatedVideo = await prisma.videos.update({
-      where: { id: BigInt(req.params.id) },
+      where: { id: BigInt(req.params.id as string) },
       data: {
         title,
         youtube_video_id,

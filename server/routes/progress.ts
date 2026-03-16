@@ -7,7 +7,7 @@ const router = Router();
 // Student: Check Enrollment & Progress Status
 router.get('/status/:subjectId', authenticateToken, async (req, res) => {
   try {
-    const subjectId = BigInt(req.params.subjectId);
+    const subjectId = BigInt(req.params.subjectId as string);
     const userId = BigInt((req as any).user.userId);
 
     const enrollment = await prisma.enrollments.findUnique({
@@ -58,7 +58,7 @@ router.post('/enroll', authenticateToken, async (req, res) => {
 // Student: Sync Video Progress (Anti Cheat mechanism)
 router.post('/sync/:videoId', authenticateToken, async (req, res) => {
   try {
-    const videoId = BigInt(req.params.videoId);
+    const videoId = BigInt(req.params.videoId as string);
     const userId = BigInt((req as any).user.userId);
     const { position_seconds } = req.body;
 

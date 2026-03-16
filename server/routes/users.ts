@@ -193,7 +193,7 @@ router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
     const { name, email, role } = req.body;
     
     const updatedUser = await prisma.users.update({
-      where: { id: BigInt(id) },
+      where: { id: BigInt(id as string) },
       data: { name, email, role }
     });
     
@@ -209,7 +209,7 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     await prisma.users.delete({
-      where: { id: BigInt(id) }
+      where: { id: BigInt(id as string) }
     });
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
@@ -224,7 +224,7 @@ router.post('/:id/warn', authenticateToken, requireAdmin, async (req, res) => {
     const { id } = req.params;
     const { reason } = req.body;
 
-    const user = await prisma.users.findUnique({ where: { id: BigInt(id) } });
+    const user = await prisma.users.findUnique({ where: { id: BigInt(id as string) } });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     console.log(`[WARNING ISSUED] Admin warned learner ${user.email}. Reason: ${reason}`);

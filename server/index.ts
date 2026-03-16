@@ -3,6 +3,8 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
+import next from 'next';
+import { parse } from 'url';
 import { prisma } from './lib/prisma';
 import { errorHandler } from './middleware/errorMiddleware';
 
@@ -22,44 +24,52 @@ import aiRoutes from './routes/ai';
   return this.toString();
 };
 
-const app = express();
+const dev = process.env.NODE_ENV !== 'production';
+const nextApp = next({ dev });
+const handle = nextApp.getRequestHandler();
 const port = process.env.PORT || 8000;
 
-app.use(cors());
-app.use(express.json());
+nextApp.prepare().then(async () => {
+  const app = express();
+  
+  app.use(cors());
+  app.use(express.json());
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/courses', courseRoutes);
-app.use('/api/content', contentRoutes);
-app.use('/api/progress', progressRoutes);
-app.use('/api/admin/stats', analyticsRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/settings', settingsRoutes);
-app.use('/api/ai', aiRoutes);
+  // API Routes
+  app.use('/api/auth', authRoutes);
+  app.use('/api/users', userRoutes);
+  app.use('/api/courses', courseRoutes);
+  app.use('/api/content', contentRoutes);
+  app.use('/api/progress', progressRoutes);
+  app.use('/api/admin/stats', analyticsRoutes);
+  app.use('/api/payments', paymentRoutes);
+  app.use('/api/settings', settingsRoutes);
+  app.use('/api/ai', aiRoutes);
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', time: new Date().toISOString() });
-});
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', time: new Date().toISOString() });
+  });
 
-// Global Error Handler - Must be after all routes
-app.use(errorHandler);
+  // Global API Error Handler
+  app.use('/api', errorHandler);
 
-async function startServer() {
+  // Default Catch-all (Next.js handling)
+  app.use((req, res) => {
+    const parsedUrl = parse(req.url!, true);
+    return handle(req, res, parsedUrl);
+  });
+
   try {
     console.log('Starting server...');
     
-    // 1. Verify database connection
+    // Verify database connection
     await prisma.$connect();
     console.log('✅ Database connected successfully');
 
-    // 2. Start listening
     const server = app.listen(port, () => {
-      console.log(`🚀 Backend Server running on port ${port}`);
+      console.log(`🚀 Server running on port ${port} (Next.js + Express API)`);
     });
 
-    // 3. Graceful shutdown
     const shutdown = async (signal: string) => {
       console.log(`\nReceived ${signal}. Shutting down gracefully...`);
       server.close(async () => {
@@ -83,9 +93,9 @@ async function startServer() {
     console.error('❌ Failed to start server:', error);
     process.exit(1);
   }
-}
+});
 
-// Global exception handlers for things outside of express
+// Global exception handlers
 process.on('uncaughtException', (err) => {
   console.error('[CRITICAL] Uncaught Exception:', err);
   process.exit(1);
@@ -95,11 +105,3 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('[CRITICAL] Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });
-
-// Export the app for Vercel serverless functions
-export default app;
-
-// Only start the server if we are running in a non-serverless environment
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  startServer();
-}
